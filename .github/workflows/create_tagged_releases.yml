@@ -12,7 +12,7 @@ env:
 
 jobs:
   build_and_test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         components: ['tls', 'admin', 'api', 'cli']
@@ -31,9 +31,9 @@ jobs:
         id: vars
         shell: bash
         run: |
-          echo ::set-output name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       ########################### Build osctrl ###########################
       - name: Build osctrl binaries
@@ -60,7 +60,7 @@ jobs:
 
   create_deb_packages:
     needs: [build_and_test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         components: ['tls', 'admin', 'api', 'cli']
@@ -79,9 +79,9 @@ jobs:
         id: vars
         shell: bash
         run: |
-          echo ::set-output name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       ########################### Build DEB packages ###########################
       - name: Build osctrl DEB packages
@@ -95,7 +95,7 @@ jobs:
 
   create_docker_images:
     needs: [build_and_test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         components: ['tls', 'admin', 'api', 'cli']
@@ -114,9 +114,9 @@ jobs:
         id: vars
         shell: bash
         run: |
-          echo ::set-output name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       ########################### Build Docker containers ###########################
       - name: Build and deploy osctrl Docker containers
@@ -154,7 +154,7 @@ jobs:
 
   create_release:
     needs: [build_and_test,create_deb_packages,create_docker_images]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         components: ['tls', 'admin', 'api', 'cli']
@@ -173,9 +173,9 @@ jobs:
         id: vars
         shell: bash
         run: |
-          echo ::set-output name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       ########################### Create release ###########################
       - name: Create a new release with binaries and packages
